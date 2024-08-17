@@ -66,8 +66,12 @@ services:
       # specify the model directory (likely you don't need to change this)
       - MODEL_DIR=/data/models
       # mmdetection model parameters
-      - CHECKPOINT_FILE=yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth
-      - CONFIG_FILE=yolov3_mobilenetv2_8xb24-320-300e_coco.py
+      # - CHECKPOINT_FILE=yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth
+      # - CONFIG_FILE=yolov3_mobilenetv2_8xb24-320-300e_coco.py
+      - CHECKPOINT_FILE=/data/models/rtmdet_l_8xb32-300e_coco_20220719_112030-5a0be7c4.pth
+      - CONFIG_FILE=/data/models/rtmdet_l_8xb32-300e_coco.py 
+      # - CHECKPOINT_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth
+      # - CONFIG_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco.py 
       - DEVICE=cpu
       - SCORE_THRESHOLD=0.5
 
@@ -77,7 +81,7 @@ services:
       # Use prefix 'http://' or 'https://' for the URL always.
       # Determine the actual IP using 'ifconfig' (Linux/Mac) or 'ipconfig' (Windows).
       - LABEL_STUDIO_URL=http://app:8000/
-      - LABEL_STUDIO_API_KEY=
+      - LABEL_STUDIO_API_KEY=${LABEL_STUDIO_API_KEY}
 
       # for s3 storage you can specify AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY,
       # it will work faster than using intermediate LS API for your file URL resolving from s3
@@ -111,11 +115,12 @@ volumes:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.0.7,rw"
-      device: ":/export/data/label-studio"
+      o: "addr=192.168.0.7,rw,nfsvers=4"
+      device: ":/data/label-studio"
+
   models:
     driver: local
     driver_opts:
       type: "nfs"
-      o: "addr=192.168.0.7,rw"
-      device: ":/export/data/models"
+      o: "addr=192.168.0.7,rw,nfsvers=4"
+      device: ":/data/models"
