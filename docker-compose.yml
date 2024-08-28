@@ -65,8 +65,8 @@ services:
       # mmdetection model parameters
       # - CHECKPOINT_FILE=yolov3_mobilenetv2_320_300e_coco_20210719_215349-d18dff72.pth
       # - CONFIG_FILE=yolov3_mobilenetv2_8xb24-320-300e_coco.py
-      - CHECKPOINT_FILE=/data/models/rtmdet_l_8xb32-300e_coco_20220719_112030-5a0be7c4.pth
-      - CONFIG_FILE=/data/models/rtmdet_l_8xb32-300e_coco.py 
+      - CHECKPOINT_FILE=${CHECKPOINT_FILE}
+      - CONFIG_FILE=${CONFIG_FILE}
       # - CHECKPOINT_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth
       # - CONFIG_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco.py 
       - DEVICE=cpu
@@ -108,6 +108,7 @@ services:
 
   mlflow:
     build: mlflow
+    restart: unless-stopped
     depends_on:
       - db
     environment:
