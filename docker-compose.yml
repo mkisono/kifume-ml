@@ -2,7 +2,6 @@
 
 services:
   nginx:
-    build: .
     image: heartexlabs/label-studio:latest
     restart: unless-stopped
     ports:
@@ -25,8 +24,6 @@ services:
 
   app:
     stdin_open: true
-    tty: true
-    build: .
     image: heartexlabs/label-studio:latest
     restart: unless-stopped
     expose:
@@ -73,7 +70,7 @@ services:
       # - CHECKPOINT_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco_20220902_112414-78e30dcc.pth
       # - CONFIG_FILE=/data/models/rtmdet_tiny_8xb32-300e_coco.py 
       - DEVICE=cpu
-      - SCORE_THRESHOLD=0.5
+      - SCORE_THRESHOLD=0.2
 
       # Specify the Label Studio URL and API key to access
       # uploaded, local storage and cloud storage files.
@@ -109,6 +106,15 @@ services:
       - ${POSTGRES_DATA_DIR:-./postgres-data}:/var/lib/postgresql/data
       # - ./deploy/pgsql/certs:/var/lib/postgresql/certs:ro
 
+  mlflow:
+    build: mlflow
+    depends_on:
+      - db
+    environment:
+      - GUNICORN_CMD_ARGS="--bind=0.0.0.0" 
+    ports:
+      - "5001:5001"
+    command: mlflow server --host 0.0.0.0 --port 5001 --backend-store-uri postgresql://postgres:@db:5432/mlflow
 
 volumes:
   label-studio-data:
@@ -117,6 +123,8 @@ volumes:
       type: "nfs"
       o: "addr=192.168.0.7,rw,nfsvers=4"
       device: ":/data/label-studio"
+      # o: "addr=192.168.0.7,rw"
+      # device: ":/export/data/label-studio"
 
   models:
     driver: local
@@ -124,3 +132,5 @@ volumes:
       type: "nfs"
       o: "addr=192.168.0.7,rw,nfsvers=4"
       device: ":/data/models"
+      # o: "addr=192.168.0.7,rw"
+      # device: ":/export/data/models"
